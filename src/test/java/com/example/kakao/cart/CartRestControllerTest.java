@@ -56,6 +56,100 @@ public class CartRestControllerTest extends MyRestDoc {
         resultActions.andExpect(jsonPath("$.success").value("true"));
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
+    // 동일한 옵션이 들어갔을 경우 에러처리
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void addCartListError_test() throws Exception {
+        // given
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item = new CartRequest.SaveDTO();
+
+        item.setOptionId(3);
+        item.setQuantity(5);
+
+        CartRequest.SaveDTO item2 = new CartRequest.SaveDTO();
+
+        item.setOptionId(3);
+        item.setQuantity(5);
+
+        requestDTOs.add(item);
+        requestDTOs.add(item2);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        //System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+
+    }
+
+    // 수량 음수 에러 체크
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void addCartListError2_test() throws Exception {
+        // given
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item = new CartRequest.SaveDTO();
+
+        item.setOptionId(3);
+        item.setQuantity(-1);
+
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        //System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+    }
+
+    // 해당 옵션 아이디를 찾을 수 없는 경우 에러처리
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void addCartListError3_test() throws Exception {
+        // given
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item = new CartRequest.SaveDTO();
+
+        item.setOptionId(999999);
+        item.setQuantity(5);
+
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+    }
+
 
     @WithUserDetails(value = "ssarmango@nate.com")
     @Test
@@ -116,6 +210,124 @@ public class CartRestControllerTest extends MyRestDoc {
         resultActions.andExpect(jsonPath("$.response.carts[0].quantity").value(10));
         resultActions.andExpect(jsonPath("$.response.carts[0].price").value(100000));
         resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
+    // 유저 장바구니에 아무것도 없을 때
+    @WithUserDetails(value = "cartTest@nate.com")
+    @Test
+    public void updateError_test() throws Exception {
+        // given
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item = new CartRequest.UpdateDTO();
+        item.setCartId(1);
+        item.setQuantity(10);
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // eye
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+    }
+
+    // 수량 음수 체크
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void updateError2_test() throws Exception {
+        // given
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item = new CartRequest.UpdateDTO();
+        item.setCartId(1);
+        item.setQuantity(-1);
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // eye
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+    }
+
+    // 동일한 cartId 가 들어왔을 때 에러 체크
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void updateError3_test() throws Exception {
+        // given
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item = new CartRequest.UpdateDTO();
+        item.setCartId(1);
+        item.setQuantity(1);
+        requestDTOs.add(item);
+
+        CartRequest.UpdateDTO item2 = new CartRequest.UpdateDTO();
+        item2.setCartId(1);
+        item2.setQuantity(1);
+        requestDTOs.add(item);
+
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // eye
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.success").value("false"));
+    }
+
+    // 유저 장바구니에 없은 cartId 가 들어왔을 때 에러처리
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void updateError4_test() throws Exception {
+        // given
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item = new CartRequest.UpdateDTO();
+        item.setCartId(999999);
+        item.setQuantity(1);
+        requestDTOs.add(item);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // eye
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpect(jsonPath("$.success").value("false"));
     }
 
 }
