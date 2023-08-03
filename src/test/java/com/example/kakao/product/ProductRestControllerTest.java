@@ -80,5 +80,6 @@ public class ProductRestControllerTest extends MyRestDoc {
         //System.out.println("테스트 : "+responseBody);
         // then
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }

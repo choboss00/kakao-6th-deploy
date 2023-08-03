@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.nullValue;
@@ -67,6 +68,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.success").value("true"));
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error").value(nullValue()));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
 
     }
 
@@ -100,6 +102,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("동일한 이메일이 존재합니다 : " + email));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러 ( 이메일 형식 에러 )
@@ -126,6 +129,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("이메일 형식으로 작성해주세요:email"));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 정상
@@ -153,6 +157,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.success").value("true"));
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error").value(nullValue()));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러 ( email 형식 에러 )
@@ -183,6 +188,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("이메일 형식으로 작성해주세요:email"));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러 ( 비밀번호 체크 )
@@ -211,6 +217,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("영문, 숫자, 특수문자가 포함되어야하고 공백이 포함될 수 없습니다.:password"));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러 ( 동일한 이메일 존재 )
@@ -244,6 +251,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("동일한 이메일이 존재합니다 : " + email));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러 ( 비밀번호 8자 ~ 20자 사이 )
@@ -272,6 +280,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("8에서 20자 이내여야 합니다.:password"));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 정상
@@ -310,6 +319,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error").value(nullValue()));
         Assertions.assertTrue(jwt.startsWith(JWTProvider.TOKEN_PREFIX));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러
@@ -348,6 +358,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("이메일 형식으로 작성해주세요:email"));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러 ( 비밀번호 체크 )
@@ -386,6 +397,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("영문, 숫자, 특수문자가 포함되어야하고 공백이 포함될 수 없습니다.:password"));
         result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 에러 ( 인증 )
@@ -422,6 +434,7 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error.message").value("인증되지 않았습니다"));
         result.andExpect(jsonPath("$.error.status").value("401"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 

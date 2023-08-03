@@ -89,6 +89,7 @@ public class CartRestControllerTest extends MyRestDoc {
 
         // verify
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
 
     }
 
@@ -119,6 +120,7 @@ public class CartRestControllerTest extends MyRestDoc {
 
         // verify
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 해당 옵션 아이디를 찾을 수 없는 경우 에러처리
@@ -148,6 +150,7 @@ public class CartRestControllerTest extends MyRestDoc {
 
         // verify
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 
@@ -238,6 +241,7 @@ public class CartRestControllerTest extends MyRestDoc {
 
         // then
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 수량 음수 체크
@@ -266,6 +270,7 @@ public class CartRestControllerTest extends MyRestDoc {
 
         // then
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 동일한 cartId 가 들어왔을 때 에러 체크
@@ -300,6 +305,7 @@ public class CartRestControllerTest extends MyRestDoc {
 
         // then
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 유저 장바구니에 없은 cartId 가 들어왔을 때 에러처리
@@ -328,6 +334,7 @@ public class CartRestControllerTest extends MyRestDoc {
 
         // then
         resultActions.andExpect(jsonPath("$.success").value("false"));
+        resultActions.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
 }

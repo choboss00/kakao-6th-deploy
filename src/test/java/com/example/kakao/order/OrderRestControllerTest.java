@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -42,6 +43,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // then
         result.andExpect(jsonPath("$.success").value("true"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
 
     }
     // 카트가 비어있을 경우
@@ -61,6 +63,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // then
         result.andExpect(jsonPath("$.success").value("false"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
 
     }
 
@@ -81,6 +84,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // then
         result.andExpect(jsonPath("$.success").value("true"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 주문 내역이 존재하지 않을 경우 에러
@@ -101,6 +105,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // then
         result.andExpect(jsonPath("$.success").value("false"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
     // 권한이 없을 경우
@@ -121,5 +126,6 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // then
         result.andExpect(jsonPath("$.success").value("false"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 }
