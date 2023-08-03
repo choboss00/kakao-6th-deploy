@@ -40,10 +40,6 @@ public class UserRestControllerTest extends MyRestDoc {
     @Autowired
     private ObjectMapper om;
 
-    // login test 시 사용
-    @MockBean
-    private UserService userService;
-
     // 정상
     @Test
     public void check_test() throws Exception {
@@ -84,9 +80,6 @@ public class UserRestControllerTest extends MyRestDoc {
 
         // requestBody 만들기
         String requestBody = om.writeValueAsString(requestDTO);
-
-        // stub -> 이 부분 코드를 어떻게 하면 더 좋게 바꿀 수 있을지?
-        doThrow(new Exception400("동일한 이메일이 존재합니다 : " + email)).when(userService).sameCheckEmail(any());
 
         // when
         ResultActions result = mvc.perform(MockMvcRequestBuilders
@@ -232,9 +225,6 @@ public class UserRestControllerTest extends MyRestDoc {
 
         String requestBody = om.writeValueAsString(requestDTO);
 
-        // stub -> 이 부분 코드를 어떻게 하면 더 좋게 바꿀 수 있을지?
-        doThrow(new Exception400("동일한 이메일이 존재합니다 : " + email)).when(userService).join(any());
-
         // when
         ResultActions result = mvc.perform(
                 MockMvcRequestBuilders
@@ -298,10 +288,6 @@ public class UserRestControllerTest extends MyRestDoc {
 
         String requestBody = om.writeValueAsString(requestDTO);
 
-        // stub
-        String jwt = JWTProvider.create(user);
-        when(userService.login(any())).thenReturn(jwt);
-
         // when
         ResultActions result = mvc.perform(
                 MockMvcRequestBuilders
@@ -318,7 +304,6 @@ public class UserRestControllerTest extends MyRestDoc {
         result.andExpect(jsonPath("$.success").value("true"));
         result.andExpect(jsonPath("$.response").value(nullValue()));
         result.andExpect(jsonPath("$.error").value(nullValue()));
-        Assertions.assertTrue(jwt.startsWith(JWTProvider.TOKEN_PREFIX));
         result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
 
@@ -336,10 +321,6 @@ public class UserRestControllerTest extends MyRestDoc {
                 .build();
 
         String requestBody = om.writeValueAsString(requestDTO);
-
-        // stub
-        String jwt = JWTProvider.create(user);
-        when(userService.login(any())).thenReturn(jwt);
 
         // when
         ResultActions result = mvc.perform(
@@ -376,10 +357,6 @@ public class UserRestControllerTest extends MyRestDoc {
 
         String requestBody = om.writeValueAsString(requestDTO);
 
-        // stub
-        String jwt = JWTProvider.create(user);
-        when(userService.login(any())).thenReturn(jwt);
-
         // when
         ResultActions result = mvc.perform(
                 MockMvcRequestBuilders
@@ -404,8 +381,9 @@ public class UserRestControllerTest extends MyRestDoc {
     @Test
     public void loginError3_test() throws Exception {
         // given
+        String email = "ssar1111@nate.com";
         UserRequest.LoginDTO requestDTO = new UserRequest.LoginDTO();
-        requestDTO.setEmail("ssar1111@nate.com");
+        requestDTO.setEmail(email);
         requestDTO.setPassword("meta1234!");
 
         User user = User.builder()
@@ -415,8 +393,6 @@ public class UserRestControllerTest extends MyRestDoc {
 
         String requestBody = om.writeValueAsString(requestDTO);
 
-        // stub -> 이 부분 코드를 어떻게 하면 더 좋게 바꿀 수 있을지?
-        doThrow(new Exception401("인증되지 않았습니다")).when(userService).login(any());
         // when
         ResultActions result = mvc.perform(
                 MockMvcRequestBuilders
@@ -426,16 +402,54 @@ public class UserRestControllerTest extends MyRestDoc {
         );
         String responseBody = result.andReturn().getResponse().getContentAsString();
         String responseHeader = result.andReturn().getResponse().getHeader(JWTProvider.HEADER);
-        //System.out.println("테스트 : "+responseBody);
-        //System.out.println("테스트 : "+responseHeader);
+        System.out.println("테스트 : "+responseBody);
+        System.out.println("테스트 : "+responseHeader);
 
         // then
         result.andExpect(jsonPath("$.success").value("false"));
         result.andExpect(jsonPath("$.response").value(nullValue()));
-        result.andExpect(jsonPath("$.error.message").value("인증되지 않았습니다"));
-        result.andExpect(jsonPath("$.error.status").value("401"));
+        result.andExpect(jsonPath("$.error.message").value("이메일을 찾을 수 없습니다 : " + email));
+        result.andExpect(jsonPath("$.error.status").value("400"));
         result.andDo(MockMvcResultHandlers.print()).andDo(document);
     }
+
+    // 비밀번호 입력 에러
+    @Test
+    public void loginError4_test() throws Exception {
+        // given
+        String email = "ssarmango@nate.com";
+        String password = "meta1234!!!!";
+        UserRequest.LoginDTO requestDTO = new UserRequest.LoginDTO();
+        requestDTO.setEmail(email);
+        requestDTO.setPassword(password);
+
+        User user = User.builder()
+                .id(1)
+                .roles("ROLE_USER")
+                .build();
+
+        String requestBody = om.writeValueAsString(requestDTO);
+
+        // when
+        ResultActions result = mvc.perform(
+                MockMvcRequestBuilders
+                        .post("/login")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        String responseBody = result.andReturn().getResponse().getContentAsString();
+        String responseHeader = result.andReturn().getResponse().getHeader(JWTProvider.HEADER);
+        System.out.println("테스트 : "+responseBody);
+        System.out.println("테스트 : "+responseHeader);
+
+        // then
+        result.andExpect(jsonPath("$.success").value("false"));
+        result.andExpect(jsonPath("$.response").value(nullValue()));
+        result.andExpect(jsonPath("$.error.message").value("패스워드가 잘못입력되었습니다 "));
+        result.andExpect(jsonPath("$.error.status").value("400"));
+        result.andDo(MockMvcResultHandlers.print()).andDo(document);
+    }
+
 
 
 }
