@@ -69,8 +69,8 @@ public class CartRestControllerTest extends MyRestDoc {
 
         CartRequest.SaveDTO item2 = new CartRequest.SaveDTO();
 
-        item.setOptionId(3);
-        item.setQuantity(5);
+        item2.setOptionId(3);
+        item2.setQuantity(5);
 
         requestDTOs.add(item);
         requestDTOs.add(item2);
@@ -287,7 +287,7 @@ public class CartRestControllerTest extends MyRestDoc {
         CartRequest.UpdateDTO item2 = new CartRequest.UpdateDTO();
         item2.setCartId(1);
         item2.setQuantity(1);
-        requestDTOs.add(item);
+        requestDTOs.add(item2);
 
 
         String requestBody = om.writeValueAsString(requestDTOs);
